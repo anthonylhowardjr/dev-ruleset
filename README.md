@@ -138,14 +138,34 @@ To hide these files in VS Code:
 2. Add the following configuration to settings:
 
    ```json
-   "github.copilot.chat.codeGeneration.instructions": [
-    { "file": ".github/shared/purpose/agnet-purpose.md" },
-    { "file": ".github/shared/guidelines/software-engineering-principles.md" },
-    { "file": ".github/shared/tools/angular/angular.md" },
-    { "file": ".github/shared/tools/typescript/typescript.md" },
-    { "file": ".github/shared/tools/css/css.md" },
-    { "file": ".github/shared/tools/design-system/rds.md" }
-  ]
+   "github.copilot.chat.commitMessageGeneration.instructions": [
+        {
+            "file": ".github/instructions/commit-message.instruction.md"
+        }
+    ],
+    "github.copilot.chat.codeGeneration.instructions": [
+        {
+            "file": ".github/instructions/code-generation.instruction.md"
+        }
+    ],
+    "github.copilot.chat.testGeneration.instructions": [
+        {
+            "file": ".github/instructions/test-generation.instruction.md"
+        }
+    ],
+    "github.copilot.chat.reviewSelection.instructions": [
+        {
+            "file": ".github/instructions/review-selection.instruction.md"
+        }
+    ]
+   ```
+
+   Prompts
+
+   ``` json
+   "chat.promptFiles": {
+         "C:\\Users\\ahoward4\\OneDrive - Knex\\Repos\\Personal\\dev-ruleset\\prompts": true,
+      },
    ```
 
    This will:
