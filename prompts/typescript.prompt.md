@@ -6,3 +6,4 @@
 #file:../shared/typescript/typescript.type-manipulation.prompt.md
 #file:../shared/typescript/typescript.utility-types.prompt.md
 #file:../shared/typescript/typescript.variable-declarations.prompt.md
+#file:../shared/guidelines/code-comments.prompt.md
