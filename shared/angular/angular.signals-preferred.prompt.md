@@ -1,196 +1,62 @@
-# Preferred Use of Signals Over Observables in Angular 19
+# Angular Signals Generation Ruleset for AI Agents: Preferred State Management (Angular 19+)
 
-**Overview:**  
-In Angular 19, Signals have become the preferred mechanism for managing reactive state. They offer a more streamlined, efficient, and type-safe approach compared to traditional Observables. This guide explains when and why to use Signals, including input and output signals, computed signals, and linked signals, to manage state and replace traditional lifecycle hooks.
+**Objective:** To provide a concise ruleset for AI agents to generate high-quality, efficient, and type-safe Angular code using Signals for state management, adhering to best practices in Angular 19 and beyond.
 
----
+**I. Core Principles: Signals First, Observables Sparingly**
 
-## Why Prefer Signals?
+1.  **Default to Signals:** **RULE:** **ALWAYS prefer Signals as the primary mechanism for managing reactive state in Angular components and services.** Use `signal()`, `computed()`, `input()`, `output()`, and `effect()` by default for state management, derived values, component inputs/outputs, and side effects. **Rationale:** Signals offer simplicity, efficiency, and improved type safety compared to Observables in Angular 19+ for most state management needs.
 
-- **Simplicity and Efficiency:**  
-  Signals provide a straightforward way to manage state with minimal boilerplate. They automatically track dependencies, ensuring that updates are efficient and predictable.
+2.  **Observables for Interop & External Data Streams:** **RULE:** **RESERVE Observables primarily for interoperability with external data streams (e.g., HTTP services, WebSockets) and when working with existing Observable-based libraries or APIs.**  Convert Observables to Signals using `toSignal()` for template binding and internal component state management whenever feasible. **Rationale:**  Observables remain relevant for asynchronous operations and external data handling but Signals are preferred for internal reactive logic within Angular applications.
 
-- **Enhanced Type Safety:**  
-  Using signals and their associated functions (`input()`, `computed()`, `linkedSignal()`) ensures that state is managed in a type-safe manner, reducing runtime errors.
+**II. State Management Rules: Signals in Action**
 
-- **Reduced Subscription Overhead:**  
-  Instead of manually subscribing to Observables in templates (which can lead to performance issues and memory leaks), convert Observables to signals using `toSignal()` from the interop package. This approach avoids unnecessary subscriptions and simplifies template bindings.
+3.  **`signal()` for Mutable State:** **RULE:** **USE `signal()` to define mutable, reactive state within components and services.** `signal()` is the fundamental building block for creating reactive values that Angular can efficiently track and update. **Rationale:** `signal()` provides a direct and type-safe way to create and update mutable state in Angular applications, triggering change detection efficiently.
 
-- **Lifecycle and Reactive Effects:**  
-  Replace traditional lifecycle hook logic (like `ngOnInit` and `ngOnChanges`) with reactive effects using `effect()`. This minimizes the need for manual change detection and centralizes state management in a reactive, declarative way.
+4.  **`computed()` for Derived State:** **RULE:** **USE `computed()` to create derived signals that automatically recalculate their values based on dependencies on other signals.**  `computed()` signals ensure efficient and reactive updates for derived data, avoiding manual recalculations and template logic. **Rationale:** `computed()` enables declarative and efficient management of derived state, automatically updating only when its dependencies change, improving performance and code clarity.
 
-- **Input and Output Signals:**  
-  Use input signals to define component inputs and output signals to define event emitters. This modern approach offers improved type safety and consistency over the traditional `@Input()` and `@Output()` decorators.
+5.  **`effect()` for Reactive Side Effects (Lifecycle Hook Replacement):** **RULE:** **REPLACE traditional lifecycle hook logic (like `ngOnInit`, `ngOnChanges`, `ngDoCheck` where state-reactive behavior is needed) with `effect()` for managing reactive side effects.**  `effect()` automatically reacts to signal changes and executes side effect logic declaratively.  **Rationale:** `effect()` centralizes side effect management in a reactive manner, improving code clarity and reducing the need for manual change detection logic within lifecycle hooks.
 
----
+6.  **`linkedSignal()` for Relative State (Advanced Use Cases):** **RULE:** **USE `linkedSignal()` judiciously for advanced scenarios where you need to create a signal that maintains a direct, two-way binding or dependency relationship with another signal.**  `linkedSignal()` is for specialized cases and should not be the default approach. **Rationale:** `linkedSignal()` provides a more specialized form of reactive connection between signals for complex state relationships, but should be used intentionally for specific scenarios.
 
-## Key Guidelines
+**III. Component Input/Output Rules: Signal-Based Approach**
 
-- **Never Subscribe in Templates:**  
-  Do not subscribe to an Observable directly in the template. Instead, convert it to a signal using `toSignal()`.
+7.  **`input()` for Component Inputs (Type Safety):** **RULE:** **ALWAYS use `input()` to define component inputs.** Leverage `input.required<Type>()` for required inputs and `input<Type>(defaultValue)` for optional inputs with default values, enforcing type safety for component input data.  **Rationale:** `input()` provides a type-safe and signal-based approach to defining component inputs, replacing the traditional `@Input()` decorator for improved clarity and type enforcement.
 
-  **Example:**
-  ```typescript
-  // Instead of:
-  // <div>{{ myObservable | async }}</div>
-  
-  // Use:
-  import { toSignal } from '@angular/core/rxjs-interop';
-  const mySignal = toSignal(myObservable);
-  // Then in the template: {{ mySignal() }}
-  ```
+8.  **`output()` for Component Event Emitters (Signal-Based Events):** **RULE:** **USE `output()` to define component event emitters.**  `output()` creates a signal-based emitter that is more efficient and consistent than the traditional `@Output()` and `EventEmitter`.  Use `.emit(value)` on the `output()` signal to emit events.  **Rationale:** `output()` provides a signal-based, type-safe, and more streamlined way to define and emit custom component events, offering a modern alternative to `@Output()` and `EventEmitter`.
 
-- **Use Signals for State Management:**  
-  Utilize `signal()` for mutable state, `computed()` for derived state, and `linkedSignal()` when you need to create signals that maintain a dependency on other signals.
+**IV. Template Binding Rules: Signals in Templates**
 
-- **Replace Lifecycle Hooks with Effects:**  
-  When possible, use `effect()` to handle side effects rather than relying on traditional lifecycle hooks. This ensures that state changes are managed reactively.
+9.  **Template Binding - Direct Signal Invocation (`signal()`):** **RULE:** **In Angular templates, bind directly to signals by invoking them as functions (`{{ mySignal() }}`).**  Angular change detection efficiently tracks signal dependencies in templates, ensuring only necessary parts of the template are updated. **Rationale:**  Direct signal invocation in templates provides the most performant and reactive way to display signal values, leveraging Angular's change detection system efficiently.
 
-- **Adopt Input and Output Signals:**  
-  Replace traditional decorators with signal-based equivalents:
-  - **Input Signals:** Use `input()` to define component inputs with type safety.
-  - **Output Signals:** Use `output()` to define event emitters.
+10. **`@let` for Computed Values in Templates:** **RULE:** **USE `@let` template syntax (e.g., `@let computedValue = myComputedSignal();`) to declare local template variables for computed signal values that are used multiple times in a template section or when you need to access the computed value without repeated function calls.** **Rationale:** `@let` improves template readability and can slightly optimize performance by avoiding redundant calls to computed signals within the same template section.
 
----
+11. **`@defer` with Signals (for Deferred Loading):** **RULE:** **LEVERAGE `@defer` block (when appropriate for performance optimization of non-critical content) in conjunction with signals for deferred loading of components or template sections.**  `@defer` can be combined with signal-based conditions (e.g., `@defer (when mySignal()) { ... }`) to control deferred loading based on reactive state. **Rationale:** `@defer` enhances performance by lazy-loading parts of the template, and combining it with signals allows for reactive control over deferred loading based on application state.
 
-## Example: Managing State with Signals in a Standalone Component
+12. **`@for` with `trackBy` and Signals for Iteration:** **RULE:** **When using `@for` loops in templates for iterative rendering of data (especially lists or collections), ALWAYS use `trackBy` function in conjunction with a unique identifier signal (or a stable identifier in the data).** This is crucial for efficient change detection and DOM updates in iterative rendering. **Rationale:** `trackBy` significantly improves performance of `@for` loops, especially with dynamic lists, by allowing Angular to efficiently track changes and only update necessary DOM elements during list updates.
 
-### Component Code: `angular.signals-preferred.component.ts`
+13. **Never Subscribe to Observables Directly in Templates:** **RULE:** **NEVER subscribe to Observables directly within Angular templates using the `async` pipe (`{{ myObservable | async }}`).** This anti-pattern leads to performance issues, potential memory leaks, and less predictable change detection. **ALWAYS convert Observables to Signals using `toSignal()` for template binding.** **Rationale:** Direct Observable subscriptions in templates create unnecessary overhead, manual subscription management complexity, and can lead to less performant and less maintainable Angular applications.
 
-```typescript
-import { Component, ChangeDetectionStrategy, input, computed, signal, effect, toSignal } from '@angular/core';
-import { Observable, of } from 'rxjs';
+**V. Code Organization & Best Practices**
 
-@Component({
-  selector: 'app-signals-demo',
-  standalone: true,
-  templateUrl: './angular.signals-preferred.component.html',
-  styleUrls: ['./angular.signals-preferred.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
-})
-export class SignalsPreferredComponent {
-  // Define a required input signal
-  counter = input.required<number>();
+14. **Signals in Services for Shared State:** **RULE:** **USE Signals in Angular Services to manage application-wide shared state.** Services are the appropriate place to hold and manage state that needs to be accessible and reactive across multiple components. Components should consume and react to signals from services, not duplicate state management logic. **Rationale:** Services are ideal for centralized, shareable state management in Angular. Signals in services promote a clear separation of concerns and improve state management architecture.
 
-  // Simulated Observable stream (for example, data from a service)
-  items$: Observable<{ id: number; name: string }[]> = of([
-    { id: 1, name: 'Alpha' },
-    { id: 2, name: 'Beta' },
-    { id: 3, name: 'Gamma' }
-  ]);
+15. **Descriptive Signal Names:** **RULE:** **USE clear and descriptive names for signals.** Signal names should accurately reflect the *state* they hold or the *derived value* they compute (e.g., `userName`, `isLoggedIn`, `productPrice`, `cartItemsCount`). **Rationale:**  Descriptive signal names significantly improve code readability and make it easier to understand the purpose and usage of different signals in your application.
 
-  // Convert the Observable to a signal for efficient binding in the template.
-  items = toSignal(this.items$);
+16. **Group Related Signals:** **RULE:** **ORGANIZE related signals logically within components and services.** Group signals that are conceptually related or part of the same feature set together in your code for better code organization and maintainability.  **Rationale:** Logical grouping enhances code structure and makes it easier to navigate and understand state management logic within components and services.
 
-  // Create a computed signal for a derived state (double the counter)
-  doubleCounter = computed(() => this.counter() * 2);
+17. **Comment Complex Signal Logic (Especially `computed()` and `effect()`):** **RULE:** **COMMENT CSS code for complex signal logic, especially for `computed()` signals with intricate derivation logic and `effect()` blocks that perform non-obvious side effects.** Explain the purpose and dependencies of computed signals and the intended side effects of `effect()` blocks.  **Rationale:** Clear comments improve code understanding and maintainability, especially for non-trivial reactive logic using `computed()` and `effect()`.
 
-  // Set up an effect to log changes whenever the counter updates
-  #logCounterChange = effect(() => {
-    console.log('Counter updated:', this.counter());
-  });
+**VI. Reflective Verification Checklist for AI Agents:**
 
-  // Method to update the counter
-  incrementCounter() {
-    this.counter.set(this.counter() + 1);
-  }
-}
-```
+Before finalizing generated Angular code using Signals, verify adherence to these rules using the following checklist:
 
-### Template Code: `angular.signals-preferred.component.html`
-
-```html
-<div class="signals-demo">
-  <!-- Declare a local variable using @let to hold the computed value -->
-  @let computedDouble = doubleCounter();
-
-  <p>Counter: {{ counter() }}</p>
-  <p>Double (computed): {{ computedDouble }}</p>
-
-  <!-- Button to update the counter -->
-  <button (click)="incrementCounter()">Increment Counter</button>
-
-  <!-- Deferred rendering example using @defer (if applicable) -->
-  @defer (on viewport; prefetch on idle) {
-    <lazy-component />
-  } @placeholder {
-    <p>Loading deferred content...</p>
-  }
-
-  <!-- Iterative rendering using @for with trackBy for efficient updates -->
-  @let itemList = items();
-  <ul>
-    @for (let item of itemList; track item.id) {
-      <li>{{ item.name }}</li>
-    }
-  </ul>
-</div>
-```
-
-### SCSS File: `angular.signals-preferred.component.scss`
-
-```scss
-.signals-demo {
-  padding: 1rem;
-  font-family: Arial, sans-serif;
-
-  p {
-    margin: 0.5rem 0;
-  }
-
-  button {
-    padding: 0.5rem 1rem;
-    background-color: #007acc;
-    color: #fff;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-
-    &:hover {
-      background-color: #005fa3;
-    }
-  }
-
-  ul {
-    list-style: none;
-    padding: 0;
-
-    li {
-      padding: 0.5rem;
-      border-bottom: 1px solid #ccc;
-    }
-  }
-}
-```
-
----
-
-## Additional Best Practices for Signals
-
-- **Signals for Reactive State:**  
-  Use signals to hold and update state instead of managing subscriptions manually. This reduces complexity and improves performance.
-  
-- **Computed and Linked Signals:**  
-  Use `computed()` for deriving state that depends on other signals and `linkedSignal()` when you need a signal that maintains its value relative to another signal.
-
-- **Replace Lifecycle Hooks:**  
-  When possible, replace traditional lifecycle hook logic (e.g., `ngOnInit`, `ngOnChanges`) with reactive effects (`effect()`). This allows your component to respond to state changes automatically.
-
-- **Input and Output Signals:**  
-  Use the new signal-based approach for component inputs (`input()`) and outputs (`output()`). This method ensures type safety and more predictable reactivity.
-
----
-
-## Reflective Questions
-
-1. **Signals vs. Observables:**  
-   How do signals simplify state management compared to Observables? What benefits have you seen when converting Observables to signals using `toSignal()`?
-
-2. **Reactive Computations:**  
-   How do computed signals and linked signals help you manage derived state more efficiently than manual subscriptions or method calls in templates?
-
-3. **Lifecycle Hooks Replacement:**  
-   In what scenarios can you replace traditional lifecycle hooks with reactive effects using `effect()`? How does this improve code clarity and performance?
-
-4. **Input/Output Signals:**  
-   What advantages do input and output signals offer over the traditional `@Input()` and `@Output()` decorators? How does this improve type safety and component communication?
+*   [ ] **Signals as Primary State Management:** Is Signal API (`signal()`, `computed()`, `effect()`, `input()`, `output()`) used as the *default* mechanism for component state management?
+*   [ ] **Observables Converted to Signals for Templates:** Are Observables (if used) converted to Signals using `toSignal()` *before* binding them in templates? (No `async` pipe for direct Observable binding in templates).
+*   [ ] **`computed()` for Derived State:** Are `computed()` signals used for all derived state based on other signals, avoiding manual recalculations?
+*   [ ] **`effect()` for Reactive Side Effects (Lifecycle Hook Alternatives):** Is `effect()` used where state-reactive side effects are needed, minimizing lifecycle hook usage for such logic?
+*   [ ] **`input()` and `output()` for Component Communication:** Are `input()` and `output()` used for component inputs and event emitters, enforcing type safety?
+*   [ ] **`@let` for Computed Values in Templates (Optimized Access):** Is `@let` used for frequently accessed computed signals in templates to improve readability and potentially performance?
+*   [ ] **`@for` with `trackBy` for Iteration Performance:** Is `trackBy` function used with `@for` loops for efficient list rendering?
+*   [ ] **Descriptive Signal Names and Code Comments:** Are signals named descriptively? Is complex signal logic (especially in `computed()` and `effect()`) commented clearly?
+*   [ ] **Signals in Services for Shared State:** Is shared application state managed in Angular Services using Signals, not duplicated in components?
+*   [ ] **Performance Considerations:** Are best practices for efficient signal usage considered (avoiding excessive signal updates in tight loops, understanding change detection implications)?

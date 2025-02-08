@@ -1,158 +1,45 @@
-# Enhanced Commit Message Guidelines
+# Enhanced Commit Message Generation Ruleset for AI Agents: Clarity, Context & Collaboration
 
-A well-crafted commit message not only documents changes but also provides context for future maintainers. Follow these guidelines to create commit messages that are concise, informative, and aligned with project standards.
+**Objective:** To provide a concise ruleset for AI agents to generate **high-quality**, **informative**, **consistent**, and **maintainable** commit messages, adhering to enhanced commit message guidelines for effective project documentation and team collaboration.
 
----
+**I. Core Commit Message Structure Rules:**
 
-## 1. Commit Types
+1.  **Mandatory Commit Type Prefix:** **RULE:** **ALWAYS start the commit message with a valid *commit type* keyword, followed by a scope (in parentheses), a colon, and a space, forming the subject line prefix.**  Choose the commit type from the predefined list: `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `chore`. The format must be: `<type>(<scope>):`.  AI Agents MUST select the most semantically accurate commit type for each change being committed. **Rationale:**  Commit types provide clear categorization of changes, making it easy to filter and understand commit history.  A consistent type prefix is the foundation of structured commit messages.
 
-Start your commit message with a type that categorizes the change. Use one of the following:
+2.  **Subject Line Required, Optional Body & Footer:** **RULE:** **ENSURE every commit message includes a *subject line*.**  Include an *optional body* to provide more detailed context or explanation of the changes. Use an *optional footer* for breaking change notes, issue references, or pull request references as needed.  Always include a blank line between the subject line, body, and footer sections to separate message parts clearly.  **Rationale:** A subject line is essential for a quick summary of the commit. The body allows for detailed explanations when necessary. The footer provides structured metadata like issue tracking and breaking change notices, following a standard commit message convention. Blank lines improve readability and parsing of the commit message by tools and humans.
 
-- **`feat`**: Introducing a new feature.
-- **`fix`**: Correcting a bug.
-- **`docs`**: Updating or improving documentation.
-- **`style`**: Formatting changes (e.g., code style, missing semicolons) that do not affect functionality.
-- **`refactor`**: Code changes that improve structure or design without adding features or fixing bugs.
-- **`perf`**: Enhancements that improve performance.
-- **`test`**: Adding or modifying tests.
-- **`chore`**: Maintenance tasks (e.g., dependency updates, build script modifications).
+**II. Subject Line Formatting Rules:**
 
----
+3.  **Subject Line Format: `<type>(<scope>): <brief description>` (Mandatory Scope):** **RULE:** **FORMAT the subject line precisely as `<type>(<scope>): <brief description>`.**  The subject line MUST include a *commit type*, a *scope* (enclosed in parentheses), and a *brief, imperative description* of the change.  Scope must be present. **Rationale:**  Consistent subject line formatting makes commit messages easily parsable and understandable.  Scope provides crucial context about the area of the codebase affected by the change.
 
-## 2. Overall Structure
+4.  **Imperative Mood in Subject Line Description:** **RULE:** **WRITE the brief description in the subject line using the *imperative mood*.**  Use command verbs like "Add," "Fix," "Update," "Remove," etc. (e.g., "Fix: …" or "Feat: …"). **Rationale:**  Imperative mood makes commit messages sound like direct instructions, making them concise and action-oriented.
 
-A commit message should consist of the following parts:
+5.  **Concise Subject Line - Max 50 Characters:** **RULE:** **KEEP the subject line concise, limiting it to a *maximum of 50 characters*.**  Brevity ensures the subject line is easily readable and fits well within commit logs and summary views in various tools. **Rationale:**  Concise subject lines are easier to scan and quickly grasp the essence of the commit, particularly when reviewing commit histories or using command-line tools.
 
-1. **Subject Line**
-2. **Optional Body**
-3. **Optional Footer (for references and breaking changes)**
+6.  **Capitalize Subject Line First Word, No Period at End:** **RULE:** **Capitalize the *first word* of the subject line (after the type and scope).**  **DO NOT end the subject line with a period.**  These capitalization and punctuation conventions contribute to a clean and consistent subject line style. **Rationale:**  Capitalization and punctuation conventions ensure a standardized and professional tone in commit messages, enhancing visual consistency and readability.
 
-Ensure there is a blank line between each part.
+**III. Commit Body Formatting Rules (Optional but Recommended):**
 
----
+7.  **Optional Body for Detailed Explanation:** **RULE:** **Include an *optional commit body* when the subject line alone is insufficient to fully explain the *details*, *reasoning*, or *context* behind the change.**  A body is especially useful for explaining complex changes, rationale behind fixes, or background information relevant to the commit. For simple or self-explanatory commits, a body may be omitted. **Rationale:** The commit body provides space for more detailed explanations beyond the brief subject line, allowing for comprehensive documentation of changes when needed for clarity or complex scenarios.
 
-## 3. Subject Line
+8.  **Body Formatting - Bullet Points OR Mermaid Diagram (Choose One):** **RULE:** **Format the commit body using *either bullet points* OR a *Mermaid diagram* to structure information effectively.** Choose bullet points for simple lists of changes or explanations. Use a Mermaid diagram (if AI agent capabilities allow and complexity warrants it) to visualize complex changes, workflows, or relationships visually within the commit message.  For simple bodies, plain paragraphs (following wrapping and paragraph rules) are also acceptable if bullet points or diagrams are not needed.  Do not mix bullet points and mermaid diagrams within the same commit body - choose one structuring approach. **Rationale:** Structured formatting (bullet points or diagrams) within the commit body enhances readability and organization of detailed explanations, making complex commit messages easier to parse and understand. Diagrams are particularly useful for visually representing workflows or complex relationships introduced or modified by the commit.
 
-The subject line is the first and most visible part of your commit message. Follow these rules:
+9.  **Body Line Wrap - Limit to 72 Characters:** **RULE:** **IF including a commit body (regardless of bullet points, diagrams, or paragraphs), wrap text in the body to a *maximum of 72 characters per line*.**  Line wrapping ensures commit messages are readable across various Git tools, terminals, and text viewers without horizontal scrolling.  **Rationale:** Line wrapping enhances cross-tool compatibility and readability, preventing horizontal scrolling and ensuring consistent formatting across different Git interfaces.
 
-Must add scope to the subject line.
+10. **Body Paragraph Separation - Distinct Ideas:** **RULE:** **IF using a commit body with paragraphs (either plain paragraphs or bullet point paragraphs), separate *different ideas or distinct explanations* into separate paragraphs.** Each paragraph should focus on a specific aspect of the commit or provide explanation for a particular part of the change. Paragraph breaks enhance clarity by logically grouping related information and separating different concepts within the commit message. **Rationale:** Paragraph separation improves body readability and organization by breaking down detailed explanations into logical chunks, making it easier for reviewers or future developers to process and understand different aspects of the commit message content.
 
-- **Format:**  
-  `<type>(<scope>): <brief description>`
-  
-- **Guidelines:**
-  - **Imperative Mood:** Use commands such as "Add", "Fix", "Remove" (e.g., “Add JWT authentication”).
-  - **Concise:** Limit to 50 characters.
-  - **Capitalization:** Start with a capital letter.
-  - **Punctuation:** Do not end with a period.
-  
-- **Example:**  
-  ```plaintext
-  feat(auth): add JWT authentication
-  ```
+**IV. Breaking Change & Footer Rules (Optional but Important):**
 
----
+11. **BREAKING CHANGE Section for Backward Incompatibility:** **RULE:** **Include a dedicated `BREAKING CHANGE:` section in the commit message (typically in the footer, though acceptable directly after the body if no other footer is needed) *if the commit introduces changes that break backward compatibility* with previous versions of the code or API.** The breaking change section is *mandatory* for commits that introduce backward-incompatible changes and should be prominently marked in the commit message for easy visibility. **Rationale:**  Breaking change notices are crucial for versioning, API management, and communicating to users/developers about potentially disruptive changes. A dedicated section makes breaking changes highly visible and ensures they are properly documented and communicated.
 
-## 4. Commit Body (Optional)
+12. **Breaking Change Header and Details:** **RULE:** **Format the breaking change section with a `BREAKING CHANGE:` header, followed by a blank line, and then a *clear and detailed explanation* of the nature of the breaking change, its potential impact, and *migration steps or necessary actions* for users/developers to adapt to the breaking change.** The explanation should be comprehensive enough for users to understand the breaking change and how to address it in their code or applications. **Rationale:** A well-formatted breaking change section provides actionable information, enabling users to understand the impact of breaking changes and provides guidance on how to migrate or adapt their code accordingly, minimizing disruption caused by backward-incompatible changes.
 
-### **Option 1: Bullet Points**
+13. **Footer for Issue/PR References - Tracking & Context:** **RULE:** **Utilize the commit message footer to *reference related issues, bug tracker IDs, or pull requests* when applicable.** Footers are particularly useful for linking commits to issue tracking systems or associating commits with specific development tasks or code reviews. Use standard keywords like `Fixes`, `Closes`, or `Relates to` followed by the issue or PR number (e.g., `Fixes #123`).  Footer references provide traceability and context by linking commits to related work items. **Rationale:** Footer references improve project management, traceability, and collaboration by creating links between code changes and related issues, tasks, or code reviews. Issue/PR references enhance the commit history's usefulness for project tracking and understanding the context of changes.
 
-- **Wrap Text:**
-  - **Limit to 72 Characters:**  
-    - Each line in the commit message should not exceed 72 characters.
-    - This constraint improves readability across various tools (e.g., Git logs, diff viewers).
-    - Prevents horizontal scrolling and maintains a clean, consistent format.
+**V. Putting It All Together - Example and Final Considerations:**
 
-- **Paragraphs:**
-  - **Separate Ideas:**  
-    - Divide the commit message into distinct paragraphs.
-    - Each paragraph should cover a specific idea or explanation.
-    - Enhances clarity by logically grouping related content.
+14. **Complete Example Commit Message - Combining All Parts:** **RULE:** **Aim for a well-structured commit message that combines all relevant parts (Type, Scope, Subject, Optional Body with formatting, Optional Breaking Change Section, and Optional Footer with references) for complex or significant changes.**  Provide a comprehensive commit message when the change warrants detailed explanation, breaking change communication, or issue/PR tracking. Refer to the "Putting It All Together" example in the provided guidelines as a model for creating complete and informative commit messages for more complex scenarios. For simpler commits, a subject line alone might be sufficient if the change is self-explanatory and requires no further context. **Rationale:** Comprehensive commit messages, when appropriate, provide maximum value for documentation, communication, and historical context.  A well-structured commit message serves as a valuable record of changes, especially for complex features, bug fixes, or breaking changes.
 
----
+15. **Clarity, Conciseness, Consistency & Review (Final Polish):** **RULE:** **Before finalizing a commit message, *always review and edit* it to ensure *clarity*, *conciseness*, and *completeness*.** Verify that the message is easy to understand, accurately describes the change, adheres to all formatting guidelines, and is consistent with the overall commit message style within the project. Clarity, conciseness, and consistency are paramount for high-quality commit messages. **Rationale:** Review and editing are essential steps for polishing commit messages and ensuring they are clear, accurate, and valuable for future maintainers and collaborators.  A well-reviewed commit message contributes significantly to the overall quality and maintainability of the project's codebase and history.
 
-### **Option 2: Mermaid Diagram**
-
-```mermaid
-flowchart TD
-    A[Commit Message Formatting]
-    B[Wrap Text]
-    C[Paragraphs]
-    D[Limit lines to 72 characters]
-    E[Improved readability across tools]
-    F[Prevents horizontal scrolling]
-    G[Separate different ideas]
-    H[Logical grouping of related information]
-    I[Enhanced clarity]
-
-    A --> B
-    A --> C
-    B --> D
-    D --> E
-    D --> F
-    C --> G
-    G --> H
-    G --> I
-```
-
-## 5. Breaking Changes
-
-If your commit includes changes that break backward compatibility, include a dedicated section.
-
-- **Guidelines:**
-  - **Header:** Start with `BREAKING CHANGE:`
-  - **Details:** Clearly explain the nature of the breaking change, its impact, and any migration steps.
-  
-- **Example:**
-  ```plaintext
-  BREAKING CHANGE: Removed support for OAuth1. Users must migrate to OAuth2.
-  ```
-
----
-
-## 6. Footer (Optional)
-
-Use the footer to reference related issues or pull requests. This is particularly useful for tracking and project management.
-
-- **Content:**
-  - **Issue References:** Use keywords such as `Fixes`, `Closes`, or `Relates to` followed by the issue or PR number.
-  
-- **Example:**
-  ```plaintext
-  Fixes #123
-  Closes PR #456
-  ```
-
----
-
-## 7. Putting It All Together
-
-Here’s a complete example that combines all elements:
-
-```plaintext
-feat(auth): add JWT authentication
-
-Added JWT authentication to enhance security for user sessions.
-This update allows users to authenticate using JSON Web Tokens, which
-provides a scalable and secure alternative to traditional session-based
-authentication.
-
-BREAKING CHANGE: Removed support for OAuth1. Users must migrate to OAuth2.
-
-Fixes #123
-```
-
----
-
-## 8. Final Considerations
-
-- **Clarity and Consistency:**  
-  Ensure every commit message is clear and consistent. This improves collaboration and makes the project history easier to understand.
-  
-- **Review and Edit:**  
-  Before committing, review your message for clarity, conciseness, and completeness.
-
-- **Adaptation:**  
-  Tailor these guidelines to fit your project’s specific needs if necessary, but try to maintain consistency across commits.
-
-By adhering to these enhanced commit message guidelines, you'll facilitate better communication within your team, simplify project maintenance, and create a robust history of changes that future developers can easily follow.
+16. **Adaptation to Project Needs (Maintain Consistency Within Project):** **RULE:** **While adhering to these guidelines as a baseline, be prepared to *adapt the commit message guidelines slightly to fit your project's specific needs or team conventions* if necessary.**  If project-specific modifications are made, ensure that the core principles of clarity, conciseness, consistency, and informative commit messages are still maintained.  Strive for consistency *within* a given project's commit history, even if slight deviations from these general guidelines are made to align with pre-existing project conventions or specific team preferences. Document any project-specific deviations from these guidelines for team clarity.  **Rationale:**  Commit message guidelines should be practical and adaptable to different project contexts. While these rules provide a solid foundation, project-specific nuances or pre-existing conventions might necessitate minor adjustments to ensure the guidelines are most effective and relevant for a particular team and project. Consistency within a project's own commit message style is ultimately more important than rigid adherence to a universally fixed set of rules if minor adaptations improve project-specific clarity or maintainability.
