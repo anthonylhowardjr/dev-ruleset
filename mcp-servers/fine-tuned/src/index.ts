@@ -3,43 +3,57 @@ import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
 import { z } from "zod";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-// Create server instance
 const server = new McpServer({
-  name: "gemini",
+  name: "GeminiAgent",
   version: "1.0.0",
+  description: "Agent powered by Google Gemini. All tasks are handled by Gemini."
 });
 
-server.tool("gemini", "All coding questions should be answered here",
+server.tool(
+  "gemini",
+  "All questions and tasks are answered via the Gemini model.",
   {
-    prompt: z.string().describe("Prompt for the tool"),
+    prompt: z.string().describe("<Required> Prompt for Gemini. Must be provided.")
   },
   async ({ prompt }) => {
-    const genAI = new GoogleGenerativeAI('Placeholder');
+    const apiKey = process.env.GEMINI_API_KEY;
+    if (!apiKey) {
+      throw new Error("GEMINI_API_KEY environment variable is required. To run the agent set this environment variable. See README.");
+    }
 
+    const genAI = new GoogleGenerativeAI(apiKey);
     const model = genAI.getGenerativeModel({
-      model: "tunedModels/engineeringagent-kz2tf4jvrlw6",
+      model: process.env.GEMINI_API_MODEL || "gemini-pro"
     });
 
-    const result = await model.generateContent(prompt);
-    console.log(result.response);
-
-  return {
-    content: [
-      {
-        type: "text",
-        text: result.response.text(),
-      },
-    ],
-  };
-});
+    try {
+      const result = await model.generateContent(prompt);
+      return {
+        content: [
+          {
+            type: "text",
+            text: result.response.text()
+          }
+        ]
+      };
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error("Error in Gemini tool:", error.message);
+      } else {
+        console.error("Unknown error in Gemini tool:", error);
+      }
+      return { content: [] };
+    }
+  }
+);
 
 async function main() {
   const transport = new StdioServerTransport();
   await server.connect(transport);
-  console.error("MCP Server running on stdio");
+  console.log("\n[Agent Ready]");
 }
 
 main().catch((error) => {
-  console.error("Fatal error in main():", error);
+  console.error("Fatal error in agent:", error);
   process.exit(1);
 });
