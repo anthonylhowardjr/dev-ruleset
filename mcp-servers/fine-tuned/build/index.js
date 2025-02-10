@@ -3,11 +3,11 @@ import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
 import { z } from "zod";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 const server = new McpServer({
-    name: "GeminiAgent",
+    name: "Anthony",
     version: "1.0.0",
-    description: "Agent powered by Google Gemini. All tasks are handled by Gemini."
+    description: "AI Agent powered by Google Gemini. All tasks and quesions are handled by this."
 });
-server.tool("gemini", "All questions and tasks are answered via the Gemini model.", {
+server.tool("ask-anthony", "All questions and tasks are answered via the Gemini model.", {
     prompt: z.string().describe("<Required> Prompt for Gemini. Must be provided.")
 }, async ({ prompt }) => {
     const apiKey = process.env.GEMINI_API_KEY;
@@ -16,7 +16,7 @@ server.tool("gemini", "All questions and tasks are answered via the Gemini model
     }
     const genAI = new GoogleGenerativeAI(apiKey);
     const model = genAI.getGenerativeModel({
-        model: process.env.GEMINI_API_MODEL || "gemini-pro"
+        model: process.env.GEMINI_API_MODEL || ""
     });
     try {
         const result = await model.generateContent(prompt);
