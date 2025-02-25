@@ -1,203 +1,338 @@
 # AI TypeScript Ruleset: Strict & Unambiguous
 
-## Preamble (VERY IMPORTANT)
+## Table of Contents
+- [Preamble](#preamble)
+- [LLM Agent Instructions](#llm-agent-instructions)
+- [Definitions](#definitions)
+- [Core Rules](#core-rules)
+  - [Variables & Types](#1-variables--types)
+  - [Functions & Methods](#2-functions--methods)
+  - [Classes & Interfaces](#3-classes--interfaces)
+  - [Error Handling](#4-error-handling)
+  - [Performance](#5-performance)
+  - [Code Style](#6-code-style)
+- [Implementation Patterns](#implementation-patterns)
+- [Validation Checklist](#validation-checklist)
+- [Examples](#examples)
 
-**Context:**  This ruleset governs ALL TypeScript code generation.  It is absolute and must be followed without exception.  Any deviation is considered a critical error.  The goal is to produce clean, maintainable, and performant TypeScript code.
+## Preamble
 
-**Enforcement:**  You (the LLM) are responsible for:
+This ruleset governs ALL TypeScript code generation. It is absolute and must be followed without exception. The goal is to produce clean, maintainable, and performant TypeScript code.
 
-1.  **Generation:**  Creating TypeScript code that adheres to these rules.
-2.  **Validation:**  Internally checking your generated code against *every* rule.
-3.  **Correction:**  Automatically correcting any violations *before* presenting the code.
-4.  **Pushback:**  If the user's request *forces* a violation, you MUST:
-    *   Clearly state the violated rule(s).
-    *   Explain *why* the request violates the rule(s).
-    *   Propose the *closest possible* alternative that adheres to the rules.
-    *   Only proceed with the violation *if and only if* the user explicitly confirms they understand the consequences and still insist.
+### Enforcement
 
-**Definitions:**
+As an AI assistant, you MUST:
 
-*   **MUST:**  An absolute requirement.  No exceptions.
-*   **MUST NOT:**  An absolute prohibition.  No exceptions.
-*   **SHOULD:**  A strong recommendation.  Deviations require a *very* strong justification, explained in the pushback mechanism.
-*   **MAY:**  Permitted, but consider alternatives first.  The choice must be justifiable.
-*  **Trivial Variable:** A variable whose type is immediately obvious from its initialization (e.g., `const x = 5;` or `const name = "Alice";`).
-* **Non-Trivial Variable:** A variable whose type is not immediately obvious from its initialization, or where explicit typing improves clarity (e.g. function parameters, complex object structures, union types).
+1. **Generate** TypeScript code that adheres to these rules
+2. **Validate** your generated code against every rule
+3. **Correct** any violations before presenting code
+4. **Push back** if the user's request requires violating rules:
+   - Clearly state the violated rule(s)
+   - Explain why the request violates the rule(s)
+   - Propose the closest compliant alternative
+   - Only proceed with a violation after explicit user confirmation
 
-## Rules
+## LLM Agent Instructions
 
-### 1. Variables & Scope
+When generating TypeScript code:
 
-1.  **Variable Declaration:**
-    *   `1.1` **MUST** use `const` for all variables that do not change after initialization.
-    *   `1.2` **MUST** use `let` only for variables that *must* be reassigned after initialization.
-    *   `1.3` **MUST NOT** use `var`.
+1. **Parse requirements** carefully, identifying input types, output types, and edge cases
+2. **Plan your solution** before writing code:
+   - Determine appropriate data structures
+   - Consider time and space complexity
+   - Identify potential error conditions
+3. **Apply rules in this priority order**:
+   - Type safety (explicit typing)
+   - Error handling
+   - Performance
+   - Readability
+   - Style conformance
+4. **Validate** your code against the checklist before presenting it
+5. **Explain** your implementation choices when they represent significant design decisions
+6. **Follow** the patterns demonstrated in the examples section
 
-2.  **Scope:**
-    *   `2.1` **MUST** declare variables in the narrowest possible scope (e.g., inside a loop or block if only used there).
+## Definitions
 
-3.  **Initialization:**
-    *   `3.1` **MUST** initialize variables at the point of declaration, unless there is a clear and justifiable reason for deferred initialization.  If deferred, explain the reason in pushback if requested.
+- **MUST**: An absolute requirement. No exceptions.
+- **MUST NOT**: An absolute prohibition. No exceptions.
+- **SHOULD**: A strong recommendation. Deviations require justification.
+- **MAY**: Permitted, but consider alternatives first.
+- **Trivial Variable**: A variable with an obvious type from initialization (e.g., `const x = 5`).
+- **Non-Trivial Variable**: A variable with a non-obvious type (e.g., complex objects, function parameters).
 
-4.  **Shadowing:**
-    *   `4.1` **MUST NOT** declare a variable with the same name as a variable in an enclosing scope (variable shadowing).  Rename the inner variable.
+## Core Rules
 
-5.  **Typing:**
-    *   `5.1` **MUST** explicitly type Non-Trivial Variables.
-    *   `5.2` **SHOULD** use type inference for Trivial Variables.
+### 1. Variables & Types
 
-### 2. Performance & Complexity
+#### 1.1 Declaration
+- **MUST** use `const` for values that don't change after initialization
+- **MUST** use `let` only when reassignment is necessary
+- **MUST NOT** use `var` under any circumstances
+- **MUST** declare variables in the narrowest possible scope
+- **MUST** initialize variables at declaration unless there's a justifiable reason
 
-1.  **Time Complexity:**
-    *   `1.1` **MUST** strive for the most efficient algorithm possible.  Prioritize O(1) or O(log n) solutions when feasible.  Justify any higher complexity in pushback.
-    *   `1.2` **MUST** clearly state the time complexity of any generated function in a format like this, if requested: `// Time Complexity: O(...)`
+#### 1.2 Typing
+- **MUST** explicitly type all Non-Trivial Variables
+- **SHOULD** use type inference for Trivial Variables
+- **MUST** explicitly specify return types for all functions and methods
+- **MUST** use TypeScript's advanced type features when appropriate
+- **MUST** break down complex types into well-named type aliases
 
-2.  **Data Structures:**
-    *   `2.1` **MUST** use appropriate data structures (e.g., `Map`, `Set`) for efficient lookups and operations when they offer a performance advantage.
+#### 1.3 Collections
+- **MUST** use `ReadonlyArray<T>`, `ReadonlyMap<K, V>`, and `ReadonlySet<T>` for immutable collections
+- **MUST NOT** attempt to modify readonly collections
+- **MUST** use appropriate data structures for efficient operations
 
-3.  **Immutability:**
-    *   `3.1` **SHOULD** favor immutable data structures and operations unless mutation provides a significant and demonstrable performance benefit.  Justify mutation in pushback.
+### 2. Functions & Methods
 
-### 3. Defensive Coding
+#### 2.1 Structure
+- **MUST** design functions with a single, well-defined purpose
+- **SHOULD** limit function length to 20-30 lines of code
+- **MUST** validate function inputs against null/undefined and unexpected types
 
-1.  **Input Validation:**
-    *   `1.1` **MUST** validate function inputs to ensure they are not `null`, `undefined`, or of an unexpected type.  Use type guards or assertions as appropriate.
+#### 2.2 Return Values
+- **MUST** explicitly specify the return type of all functions
+- **MUST** handle potential errors explicitly
+- **MUST** fail fast: handle error conditions immediately
 
-2.  **Error Handling:**
-    *   `2.1` **MUST** handle potential errors explicitly.  Do not ignore errors.
-    *   `2.2` **MUST** use `try...catch` blocks for operations that might throw exceptions.
-    *   `2.3` **MUST** throw specific, informative errors when assumptions are violated (e.g., `throw new Error("Invalid input: parameter X must be positive")`).
-    *   `2.4` **MUST** fail fast:  If an error condition is detected, handle it immediately rather than continuing with potentially invalid data.
+### 3. Classes & Interfaces
 
-### 4. Classes & Privacy
+#### 3.1 Interfaces
+- **MUST** prefix interface names with `I` (e.g., `interface IUserData`)
+- **SHOULD** use built-in utility types (`Pick`, `Omit`, etc.) to avoid redundant definitions
 
-1.  **Private Fields:**
-    *   `1.1` **MUST** use the `#` prefix for truly private class fields (e.g., `#privateField`).
+#### 3.2 Classes
+- **MUST** use the `#` prefix for truly private class fields (e.g., `#privateField`)
+- **MUST** maintain proper encapsulation (private/protected members for internal logic)
+- **MAY** use techniques to prevent subclassing if the class is not designed for inheritance
 
-2.  **Encapsulation:**
-    *   `2.1` **MUST** keep internal logic and data within the `private` or `protected` scope of a class.  Expose only necessary methods and properties through the public interface.
+### 4. Error Handling
 
-3.  **Class Finalization:**
-    *   `3.1` **MAY** use techniques to prevent subclassing (e.g., a private constructor with a static factory method) if the class is not designed for inheritance.  Justify this decision in pushback.
+- **MUST** use `try...catch` blocks for operations that might throw exceptions
+- **MUST** throw specific, informative errors (e.g., `throw new Error("Invalid input: parameter X must be positive")`)
+- **MUST NOT** swallow or ignore errors
 
-### 5. Interfaces & Advanced Types
+### 5. Performance
 
-1.  **Interface Naming:**
-    *   `1.1` **MUST** prefix interface names with `I` (e.g., `interface IUserData`).
+- **MUST** strive for optimal time complexity, prioritizing O(1) or O(log n) when possible
+- **SHOULD** favor immutable operations unless mutation provides significant benefits
+- **MUST** state time complexity when requested: `// Time Complexity: O(...)`
 
-2.  **Advanced Types:**
-    *   `2.1` **MUST** use TypeScript's advanced type features (generics, mapped types, conditional types, union types, intersection types) when they improve type safety, code clarity, or reduce code duplication.
+### 6. Code Style
 
-3.  **Type Aliases:**
-    *   `3.1` **MUST** break down complex type transformations into smaller, well-named type aliases to improve readability.
+#### 6.1 Naming
+- **MUST** use descriptive and meaningful variable names
+- **MUST NOT** use single-letter names except for simple loop counters
+- **MUST** use `camelCase` for variables and functions
+- **MUST** use `PascalCase` for classes and interfaces
 
-4.  **Utility Types:**
-    *   `4.1` **SHOULD** use built-in utility types (e.g., `Pick`, `Omit`, `Partial`, `Required`, `Readonly`) to avoid redundant type definitions.
+#### 6.2 Structure
+- **MUST** use destructuring to extract multiple properties but limit to two levels
+- **SHOULD** rename destructured variables only when necessary
+- **MUST NOT** include comments unless specifically requested
+- **MUST** use 4 spaces for indentation
+- **MUST** include semicolons at the end of statements
 
-### 6. Read-only Collections
+## Implementation Patterns
 
-1.  **Readonly Types:**
-    *   `1.1` **MUST** use `ReadonlyArray<T>`, `ReadonlyMap<K, V>`, and `ReadonlySet<T>` for collections that should not be modified after creation.
+### Preferred Patterns
 
-2.  **Mutation Prevention:**
-    *   `2.1` **MUST NOT** attempt to modify a `Readonly` collection.
+#### Data Transformation
+```typescript
+// PREFERRED: Pure function pattern
+function transformData(input: ReadonlyArray<IInputType>): IOutputType[] {
+    return input.map(item => ({
+        id: item.id,
+        name: item.name,
+        value: calculateValue(item)
+    }));
+}
 
-3.  **Mutable Copies:**
-    *   `3.1` **MAY** create a mutable copy of a `Readonly` collection if modification is required.  Justify this in pushback.
+function calculateValue(item: IInputType): number {
+    // Pure calculation logic
+    return item.baseValue * item.multiplier;
+}
+```
 
-### 7. Destructuring & Naming
+#### Error Handling
+```typescript
+// PREFERRED: Early validation with specific errors
+function processUserData(userData: IUserData | undefined): IProcessedData {
+    if (!userData) {
+        throw new Error("userData is required");
+    }
+    
+    if (!userData.id || userData.id.trim() === "") {
+        throw new Error("userData.id is required and cannot be empty");
+    }
+    
+    // Processing after validation
+    return {
+        // ...processed data
+    };
+}
+```
 
-1.  **Destructuring:**
-    *   `1.1` **MUST** use destructuring to extract multiple properties from objects or elements from tuples/arrays when those properties/elements are used multiple times.
+#### Type Guards
+```typescript
+// PREFERRED: User-defined type guards
+function isValidResponse(response: unknown): response is IApiResponse {
+    return (
+        typeof response === "object" &&
+        response !== null &&
+        "data" in response &&
+        "status" in response &&
+        typeof response.status === "number"
+    );
+}
 
-2.  **Destructuring Depth:**
-    *   `2.1` **MUST NOT** use deeply nested destructuring.  If destructuring becomes complex or hard to read, extract properties individually.  Limit destructuring to a maximum of two levels.
+function handleResponse(response: unknown): IProcessedData {
+    if (!isValidResponse(response)) {
+        throw new Error("Invalid API response");
+    }
+    
+    // Now TypeScript knows response is IApiResponse
+    return processData(response.data);
+}
+```
 
-3.  **Naming Conventions:**
-    *   `3.1` **MUST** use descriptive and meaningful variable names.
-    *   `3.2` **MUST NOT** use single-letter variable names except for simple loop counters (e.g., `i`, `j`, `k`).
-    *   `3.3` **MUST NOT** use abbreviations in variable names unless they are extremely common and unambiguous (e.g., `URL`).
-    *   `3.4` **MUST** use `camelCase` for variable and function names.
-    *   `3.5` **MUST** use `PascalCase` for class and interface names.
+### Patterns to Avoid
 
-4.  **Destructuring Renaming:**
-    *   `4.1` **SHOULD** rename destructured variables only when necessary to avoid naming conflicts or to improve clarity.
+#### Avoid: Mutation-Heavy Code
+```typescript
+// AVOID: Mutating input parameters
+function processItems(items: IItem[]): void {
+    for (let i = 0; i < items.length; i++) {
+        items[i].processed = true;
+        items[i].value *= 2;
+    }
+}
 
-### 8. Symbols
+// BETTER: Return new array
+function processItems(items: ReadonlyArray<IItem>): IItem[] {
+    return items.map(item => ({
+        ...item,
+        processed: true,
+        value: item.value * 2
+    }));
+}
+```
 
-1.  **Symbol Usage:**
-    *   `1.1` **MUST** use `Symbol()` or `Symbol.for()` only for creating unique keys or for globally shared keys (rare).  Justify the use of Symbols in pushback.
+#### Avoid: Type Casting
+```typescript
+// AVOID: Type assertions without validation
+function handleData(data: unknown): IProcessedData {
+    const userData = data as IUserData; // Dangerous!
+    return processUserData(userData);
+}
 
-2.  **Symbol Access:**
-    *   `2.1` **MUST** use bracket notation to access properties keyed by symbols (e.g., `object[mySymbol]`).
+// BETTER: Validate before casting
+function handleData(data: unknown): IProcessedData {
+    if (!isUserData(data)) {
+        throw new Error("Invalid user data");
+    }
+    // Now this is safe
+    return processUserData(data);
+}
 
-3.  **Symbol Scope:**
-    *   `3.1` **SHOULD** keep symbols private or internal to a module unless there is a compelling reason to expose them.
+function isUserData(data: unknown): data is IUserData {
+    // Implement proper validation
+    return (
+        typeof data === "object" &&
+        data !== null &&
+        "id" in data &&
+        "name" in data
+    );
+}
+```
 
-### 9. Utility Types & Manipulation (Consolidated with Section 5)
+## Validation Checklist
 
-### 10. Method Return Types
+Before returning code, verify:
 
-1.  **Explicit Return Types:**
-    *   `1.1` **MUST** explicitly specify the return type of all functions and methods.  Do not rely on type inference for function return types.
+1. **Types**: All non-trivial variables, parameters, and return values are explicitly typed
+2. **Error handling**: All potential errors are handled appropriately
+3. **Immutability**: `const` is used wherever possible, readonly collections used for immutable data
+4. **Naming**: All variables, functions, classes, and interfaces follow naming conventions
+5. **Structure**: Functions are single-purpose and appropriately sized
+6. **Performance**: Data structures and algorithms are efficient for the use case
+7. **Style**: Code follows 4-space indentation, uses semicolons, and has consistent spacing
+8. **Privacy**: Class members use proper access modifiers and private fields use `#` prefix
+9. **Checks**: Input validation is performed where needed
+10. **Initialization**: Variables are initialized at declaration when possible
 
-2.  **Single Responsibility:**
-    *   `2.1` **MUST** design functions and methods to have a single, well-defined purpose.
-    *   `2.2` **MUST** keep functions and methods concise and focused.
+## Examples
 
-3.  **Method Length:**
-     *  `3.1` **SHOULD** avoid excessively long functions or methods. Break down large functions into smaller, more manageable helper functions. Aim for functions to be no longer than 20-30 lines of code, excluding type definitions and whitespace. Justify exceeding this limit.
+### Complete Example: Data Processing Function
 
-### 11. No Code Comments (Unless Asked)
+**Good Example:**
 
-1.  **Comments:**
-    *   `1.1` **MUST NOT** include inline comments (`// ...`) or block comments (`/* ... */`) in the generated code unless specifically requested by the user.
-    *   `1.2` **MAY** generate JSDoc comments (`/** ... */`) only if explicitly requested by the user.
+```typescript
+interface IUserData {
+    id: string;
+    name: string;
+    age?: number;
+    scores: number[];
+}
 
-### 12. Pushback & Single Responsibility (Reinforced in Preamble)
+interface IProcessedUser {
+    id: string;
+    displayName: string;
+    isAdult: boolean;
+    averageScore: number;
+}
 
-### 13. Final Requirements
+/**
+ * Processes raw user data into a standardized format
+ */
+function processUsers(users: ReadonlyArray<IUserData>): IProcessedUser[] {
+    if (!users || users.length === 0) {
+        return [];
+    }
+    
+    return users.map(user => {
+        // Validate individual user
+        if (!user.id || user.id.trim() === "") {
+            throw new Error("User ID is required");
+        }
+        
+        const { id, name, age = 0, scores } = user;
+        
+        // Calculate average score safely
+        const averageScore: number = scores.length > 0
+            ? scores.reduce((sum, score) => sum + score, 0) / scores.length
+            : 0;
+        
+        return {
+            id,
+            displayName: name || "Anonymous",
+            isAdult: age >= 18,
+            averageScore
+        };
+    });
+}
 
-1.  **Compilation:**
-    *   `1.1` **MUST** generate TypeScript code that compiles without errors.
+// Time Complexity: O(n) where n is the number of users
+```
 
-2.  **Linting:**
-    *   `1.2` **MUST** generate code that adheres to standard TypeScript linting rules (e.g., consistent indentation, use of semicolons, spacing).  Assume a standard linting configuration.
+### Pushback Example
 
-3.  **Extensibility:**
-    *   `3.1` **MUST** strive to produce code that is well-structured, modular, and easy to extend or modify in the future.
+**User Request:** "Write a function that takes a `ReadonlyArray<number>` and doubles all values by modifying the original array."
 
-4.  **Formatting:**
-    *   `4.1` **MUST** consistently use 4 spaces for indentation.
-    *   `4.2` **MUST** include semicolons at the end of each statement.
-    *   `4.3` **MUST** use consistent spacing around operators and keywords.
-
-5.  **Code Review:**
-    * `5.1` **MUST** internally review and validate ALL generated code against this entire ruleset *before* presenting it to the user.
-
-## Example of Pushback (Illustrative)
-
-**User Request:** "Write a function that takes a `ReadonlyArray<number>` and returns a new array with each number doubled.  Modify the original array directly to save memory."
-
-**LLM Response:**
+**Correct Response:**
 
 ```typescript
 // PUSHBACK:
-// The user request violates the following rules:
-// - 6.2.1: MUST NOT attempt to modify a Readonly collection.
-// - 2.3.1: SHOULD favor immutable data structures and operations unless mutation provides a significant and demonstrable performance benefit.
+// This request violates rule 1.3: "MUST NOT attempt to modify readonly collections"
 //
-// Modifying the original ReadonlyArray is not possible in TypeScript.  It is designed to prevent modification.
-// While avoiding a copy *could* save memory, the benefits are often negligible, and immutability provides significant advantages
-// in terms of code predictability and preventing unintended side effects.
-//
-// Proposed Solution (adheres to rules):
+// ReadonlyArray is designed to be immutable, and TypeScript prevents direct modification.
+// Instead, I can create a function that returns a new array with doubled values.
 
 function doubleNumbers(numbers: ReadonlyArray<number>): number[] {
-  return numbers.map(num => num * 2);
+    return numbers.map(num => num * 2);
 }
 
 // Time Complexity: O(n)
 
-// User, do you understand the implications of modifying a ReadonlyArray and the benefits of immutability?
-// Do you still insist on modifying the original array, knowing it's not possible in a type-safe way?  (Yes/No)
+// If you still need to modify an array in-place, I can provide a version that works
+// with a mutable array instead. Would you like me to do that?
