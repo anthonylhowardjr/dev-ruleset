@@ -47,6 +47,64 @@ server.tool(
   }
 );
 
+server.tool(
+  "generate-commit-message",
+  "Generates commit messages using the custom API.",
+  {
+    prompt: z.string().describe("<Required> Prompt for generating commit message. Must be provided.")
+  },
+  async ({ prompt }) => {
+    const apiUrl = "https://aip-api.test.rp.foc.zone/swagger/index.html#/Chat";
+    const version = "v1"; // Replace with the actual version if different
+
+    try {
+      // Initiate chat request
+      const initiateResponse = await fetch(`${apiUrl}/post_api_${version}_chat_initiatechat`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ prompt })
+      });
+
+      if (!initiateResponse.ok) {
+        throw new Error("Failed to initiate chat session");
+      }
+
+      const initiateData = await initiateResponse.json();
+      const sessionId = initiateData.SessionId;
+
+      // Fetch chat response
+      const fetchResponse = await fetch(`${apiUrl}/get_api_${version}_chat_getresponse_${sessionId}`, {
+        method: "GET"
+      });
+
+      if (!fetchResponse.ok) {
+        throw new Error("Failed to fetch chat response");
+      }
+
+      const fetchData = await fetchResponse.json();
+      const commitMessage = fetchData.response.text;
+
+      return {
+        content: [
+          {
+            type: "text",
+            text: commitMessage
+          }
+        ]
+      };
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error("Error in generate-commit-message tool:", error.message);
+      } else {
+        console.error("Unknown error in generate-commit-message tool:", error);
+      }
+      return { content: [] };
+    }
+  }
+);
+
 async function main() {
   const transport = new StdioServerTransport();
   await server.connect(transport);

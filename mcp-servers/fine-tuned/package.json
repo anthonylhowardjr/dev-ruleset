@@ -8,7 +8,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "tsc && node -e \"require('fs').chmodSync('build/index.js', '755')\""
+    "build": "tsc && node -e \"require('fs').chmodSync('build/index.js', '755')\"",
+    "build-navigator": "tsc && node -e \"require('fs').chmodSync('build/navigator.js', '755')\""
   },
   "files": [
     "build"
@@ -19,6 +20,7 @@
   "dependencies": {
     "@google/generative-ai": "^0.21.0",
     "@modelcontextprotocol/sdk": "^1.4.1",
+    "node-fetch": "^3.3.2",
     "zod": "^3.24.1"
   },
   "devDependencies": {
