@@ -1,20 +1,5 @@
 # AI TypeScript Ruleset: Strict & Unambiguous
 
-## Table of Contents
-- [Preamble](#preamble)
-- [LLM Agent Instructions](#llm-agent-instructions)
-- [Definitions](#definitions)
-- [Core Rules](#core-rules)
-  - [Variables & Types](#1-variables--types)
-  - [Functions & Methods](#2-functions--methods)
-  - [Classes & Interfaces](#3-classes--interfaces)
-  - [Error Handling](#4-error-handling)
-  - [Performance](#5-performance)
-  - [Code Style](#6-code-style)
-- [Implementation Patterns](#implementation-patterns)
-- [Validation Checklist](#validation-checklist)
-- [Examples](#examples)
-
 ## Preamble
 
 This ruleset governs ALL TypeScript code generation. It is absolute and must be followed without exception. The goal is to produce clean, maintainable, and performant TypeScript code.
