@@ -160,13 +160,6 @@ To hide these files in VS Code:
     ]
    ```
 
-   Prompts
-
-   ``` json
-   "chat.promptFiles": {
-         "C:\\Users\\ahoward4\\OneDrive - Knex\\Repos\\Personal\\dev-ruleset\\prompts": true,
-      },
-   ```
 
    This will:
 
